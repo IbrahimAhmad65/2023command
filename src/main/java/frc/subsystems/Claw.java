@@ -20,6 +20,10 @@ public class Claw extends SubsystemBase {
         return (open ? "open" : "closed") + ",";
     }
 
+    public boolean isOpen() {
+        return open;
+    }
+
     public void setOpen(boolean open) {
         this.open = open;
     }
