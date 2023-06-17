@@ -13,18 +13,54 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
 
     private double minAngle;
     private double maxAngle;
+    private double width;
+    private double mass;
 
+    private PinkarmSim armSim;
 
+    /*
+     * Creates a simulation of a wrist
+     *
+     * @param gearbox the motor powering the wrist rotation
+     * @param minAngle the smallest angle the wrist can rotate to
+     * @param maxAngle the largest angle the wrist can rotate to
+     */
     public WristSim(DCMotor gearbox, double minAngle, double maxAngle) {
         super(LinearSystemId.createDCMotorSystem(gearbox,.1,1./8), null);
         this.minAngle = minAngle;
         this.maxAngle = maxAngle;
     }
 
+    /*
+     * Creates a simulation of a wrist
+     *
+     * @param gearbox the motor powering the wrist rotation
+     * @param minAngle the smallest angle the wrist can rotate to
+     * @param maxAngle the largest angle the wrist can rotate to
+     * @param mass the mass of the wrist
+     * @param extensionSim an ExtensionSim representative of the extending arm
+     * @param width the length in meters of the claw
+     */
+    public WristSim(DCMotor gearbox, double minAngle, double maxAngle, double mass, PinkarmSim armSim, double width) {
+        super(LinearSystemId.createDCMotorSystem(gearbox,.1,1./8), null);
+        this.minAngle = minAngle;
+        this.maxAngle = maxAngle;
+        this.armSim = armSim;
+        this.width = width;
+        this.mass = mass;
+    }
+
     @Override
     protected Matrix<N2, N1> updateX(Matrix<N2, N1> currentXhat, Matrix<N1, N1> u, double dtSeconds) {
         Matrix<N2, N1> updatedXhat = NumericalIntegration.rkdp((Matrix<N2, N1> x, Matrix<N1, N1> _u) -> {
             Matrix<N2, N1> xdot = m_plant.getA().times(x).plus(m_plant.getB().times(_u));
+            // account for the torque applied to the wrist by the arm
+            // NOTE width may be false, since center of mass is likely not directly in the middle of the object
+            double forceByArm = (width / 2) * PinkarmSim.ArmConfig.mass2 * armSim.getExtensionAccel() * Math.cos(getAngle());
+            double forceByGravity = (width / 2) * mass * Math.cos(getAngle());
+            // TODO find an actual equation for inertia, since this is completely made up
+            double inertia = (1.0/3.0) * mass * Math.pow((width / 2), 2);
+            xdot = xdot.plus(VecBuilder.fill(0, (forceByArm + forceByGravity) / inertia));
             return xdot;
         }, currentXhat, u, dtSeconds);
 
@@ -37,7 +73,6 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
         }
         return updatedXhat;
     }
-
 
     public boolean wouldHitLowerLimit(double currentExtension) {
         return currentExtension <= this.minAngle;
@@ -72,6 +107,7 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
 
     public static void main(String[] args) {
         double angle = -Math.PI / 2;
+        // TODO fix print statement because it completely ignores torque from gravity and the arm
         WristSim sim = new WristSim(DCMotor.getNEO(1), 0, Math.PI);
         sim.setInputVoltage(12);
         for (int i = 0; i < 100; i++) {

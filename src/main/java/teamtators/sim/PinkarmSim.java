@@ -12,6 +12,8 @@ public class PinkarmSim {
 
 
     public static class ArmConfig {
+        // 1 is the base arm
+        // 2 is the telescoping arm
         public static double mass1 = 1;
         public static double mass2 = .8;
         public static double length1 = .8;
@@ -35,8 +37,6 @@ public class PinkarmSim {
         armRotationSim.setState(x);
 
         armExtensionSim = new ExtensionSim(DCMotor.getNeo550(1), ArmConfig.mass2, ArmConfig.length1, ArmConfig.length1 + ArmConfig.length2, 0, false);
-
-
     }
 
     public void periodic() {
@@ -89,5 +89,9 @@ public class PinkarmSim {
 
     public double getAngleRads() {
         return armRotationSim.getAngleRads();
+    }
+
+    public double getExtensionAccel() {
+        return armExtensionSim.getAccel();
     }
 }

@@ -18,6 +18,8 @@ public class ExtensionSim extends LinearSystemSim<N2, N1, N1> {
     private boolean gravity;
     private double gravityAngle = -Math.PI / 2;
 
+    // stuff to help with wrist simulation
+    private Matrix<N2, N1> xdot = VecBuilder.fill(0, 0);
 
     public ExtensionSim(DCMotor gearbox, double mass, double minLength, double maxLength, double angle, boolean gravity) {
         super(LinearSystemId.createElevatorSystem(gearbox, mass, .02, 1./10), null);
@@ -36,6 +38,10 @@ public class ExtensionSim extends LinearSystemSim<N2, N1, N1> {
             if (gravity) {
                 xdot = xdot.plus(VecBuilder.fill(0, 9.81 * Math.cos(angle - gravityAngle)));
             }
+
+            // hacked together fix to get the output equation
+            this.xdot = xdot;
+
             return xdot;
         }, currentXhat, u, dtSeconds);
 
@@ -48,7 +54,6 @@ public class ExtensionSim extends LinearSystemSim<N2, N1, N1> {
         }
         return updatedXhat;
     }
-
 
     public boolean wouldHitLowerLimit(double currentExtension) {
         return currentExtension <= this.minLength;
@@ -78,6 +83,10 @@ public class ExtensionSim extends LinearSystemSim<N2, N1, N1> {
 
     public double getExtension() {
         return getTotalLength() - minLength;
+    }
+
+    public double getAccel() {
+        return xdot.get(0, 1);
     }
 
     public static void main(String[] args) {
