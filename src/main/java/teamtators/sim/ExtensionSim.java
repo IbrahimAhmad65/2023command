@@ -86,7 +86,7 @@ public class ExtensionSim extends LinearSystemSim<N2, N1, N1> {
     }
 
     public double getAccel() {
-        return xdot.get(0, 1);
+        return xdot.get(1, 0);
     }
 
     public static void main(String[] args) {
