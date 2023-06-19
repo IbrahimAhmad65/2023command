@@ -109,26 +109,11 @@ public class SwerveDrive extends SubsystemBase implements Consumer<ChassisSpeeds
         gyroTable.setDouble(gyro.getYawContinuous());
     }
 
-    public void lockVel() {
-        lockVel = true;
-    }
 
-    public void unlockVel() {
-        lockVel = false;
-    }
 
-    public void lockAng() {
-        lockAng = true;
-    }
 
-    public void unlockAng() {
-        lockAng = false;
-    }
 
-    public void unlock() {
-        unlockVel();
-        unlockAng();
-    }
+
 
 
     public void updateModules() {
