@@ -37,7 +37,7 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
      * @param gearbox the motor powering the wrist rotation
      * @param minAngle the smallest angle the wrist can rotate to
      * @param maxAngle the largest angle the wrist can rotate to
-     * @param mass the mass of the wrist
+     * @param mass the mass of the wrist IN KILOGRAMS
      * @param extensionSim an ExtensionSim representative of the extending arm
      * @param width the length in meters of the claw
      */

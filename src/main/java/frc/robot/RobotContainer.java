@@ -28,7 +28,7 @@ public class RobotContainer {
     configureBindings();
     claw = new Claw();
     arm = new Arm();
-    wrist = new Wrist();
+    wrist = new Wrist(arm.getDynamicsSim());
     simWriter = new SimWriter(arm,wrist,claw);
     pickFromChamber = new SequentialCommandGroup(
             new ArmGoToPosition(arm,-Math.PI/2-Math.PI/6,.8),

@@ -18,7 +18,7 @@ public class SimWriter extends SubsystemBase {
         this.wrist = wrist;
         this.claw = claw;
         try {
-            writer = new FileWriter("/home/ibrahim/simAll.txt");
+            writer = new FileWriter(System.getenv("HOME") + "/simAll.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }
