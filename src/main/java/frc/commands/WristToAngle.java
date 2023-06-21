@@ -22,7 +22,7 @@ public class WristToAngle extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        System.out.println("Wrist angle: " + wrist.getDynamicsSim().getAngle() + " Target angle: " + angle);
+        //System.out.println("Wrist angle: " + wrist.getDynamicsSim().getAngle() + " Target angle: " + angle);
         return wrist.isAtTargetAngle();
     }
 }

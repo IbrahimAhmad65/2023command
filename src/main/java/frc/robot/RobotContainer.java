@@ -40,7 +40,6 @@ public class RobotContainer {
     armDoThings = new SequentialCommandGroup(
             pickFromChamber
     );
-
   }
 
   private void configureBindings() {}

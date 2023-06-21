@@ -15,6 +15,8 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
     private double maxAngle;
     private double width;
     private double mass;
+    private boolean gravity;
+    private double m_gravityAngle = -Math.PI/2;
 
     private PinkarmSim armSim;
 
@@ -41,13 +43,14 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
      * @param extensionSim an ExtensionSim representative of the extending arm
      * @param width the length in meters of the claw
      */
-    public WristSim(DCMotor gearbox, double minAngle, double maxAngle, double mass, PinkarmSim armSim, double width) {
+    public WristSim(DCMotor gearbox, double minAngle, double maxAngle, double mass, PinkarmSim armSim, double width, boolean gravity) {
         super(LinearSystemId.createDCMotorSystem(gearbox,.1,1./8), null);
         this.minAngle = minAngle;
         this.maxAngle = maxAngle;
         this.armSim = armSim;
         this.width = width;
         this.mass = mass;
+        this.gravity = gravity;
     }
 
     @Override
@@ -56,11 +59,14 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
             Matrix<N2, N1> xdot = m_plant.getA().times(x).plus(m_plant.getB().times(_u));
             // account for the torque applied to the wrist by the arm
             // NOTE width may be false, since center of mass is likely not directly in the middle of the object
-            double forceByArm = (width / 2) * PinkarmSim.ArmConfig.mass2 * armSim.getExtensionAccel() * Math.cos(getAngle());
-            double forceByGravity = (width / 2) * mass * Math.cos(getAngle());
-            // TODO find an actual equation for inertia, since this is completely made up
-            double inertia = (1.0/3.0) * mass * Math.pow((width / 2), 2);
-            xdot = xdot.plus(VecBuilder.fill(0, (forceByArm + forceByGravity) / inertia));
+            if(gravity) {
+                double forceByArm = (width / 2) * PinkarmSim.ArmConfig.mass2 * armSim.getExtensionAccel() * Math.cos(getAngle());
+                double forceByGravity = (width / 2) * mass * Math.cos(x.get(0, 0)) * -9.8;
+                // FIXME find an actual equation for inertia, since this is completely made up
+                double inertia = (1.0/3.0) * mass * (width / 2) * (width / 2);
+                //xdot = xdot.plus(VecBuilder.fill(0, (forceByArm + forceByGravity) / inertia));
+                xdot = xdot.plus(VecBuilder.fill(0, forceByGravity / inertia));
+            }
             return xdot;
         }, currentXhat, u, dtSeconds);
 
@@ -113,7 +119,7 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
         for (int i = 0; i < 100; i++) {
             sim.update(0.02);
 //            System.out.println("("+ Math.cos(angle) * sim.getOutput(0) +","+ Math.sin(angle) * sim.getOutput(0) + ")");
-            System.out.println("(" + ((double)i)/100 +"," + sim.getAngle() +")");
+            //System.out.println("(" + ((double)i)/100 +"," + sim.getAngle() +")");
 
         }
     }

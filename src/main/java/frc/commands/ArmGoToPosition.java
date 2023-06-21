@@ -29,7 +29,7 @@ public class ArmGoToPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        System.out.println("ArmGoToPosition.isFinished(): " + arm.isAtTargetAngle() + " " + arm.isAtTargetLength());
+        //System.out.println("ArmGoToPosition.isFinished(): " + arm.isAtTargetAngle() + " " + arm.isAtTargetLength());
         return arm.isAtTargetAngle() && arm.isAtTargetLength();
     }
 }

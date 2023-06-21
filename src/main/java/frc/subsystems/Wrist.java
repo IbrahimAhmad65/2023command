@@ -18,11 +18,13 @@ public class Wrist extends SubsystemBase {
     private final boolean sim = SimWriter.sim;
     private PIDController controller;
 
+    private int i = 0;
+
     public Wrist(PinkarmSim armSim) {
         super();
         if (sim) {
-            controller = new PIDController(1,0,0);
-            wristSim = new WristSim(DCMotor.getNeo550(1), 0, Math.PI, 5, armSim, 0.1);
+            controller = new PIDController(1,1,1);
+            wristSim = new WristSim(DCMotor.getNEO(1), -Math.PI, Math.PI, 0.5, armSim, 0.1, true);
         } else {
             encoder = new DutyCycleEncoder(0);
             motor = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -32,9 +34,11 @@ public class Wrist extends SubsystemBase {
     @Override
     public void periodic() {
         if (sim){
-            wristSim.setInputVoltage(controller.calculate(wristSim.getAngle(), targetAngle));
+                //wristSim.setInputVoltage(controller.calculate(wristSim.getAngle(), targetAngle));
+            wristSim.setInputVoltage(0);
             wristSim.update(0.02);
-            System.out.println(wristSim.getAngle());
+            System.out.println("(" + Math.cos(wristSim.getAngle()) + "," + Math.sin(wristSim.getAngle()) + ")");
+            i++;
         }
     }
 
