@@ -63,9 +63,8 @@ public class WristSim extends LinearSystemSim<N2, N1, N2> {
                 double forceByArm = (width / 2) * PinkarmSim.ArmConfig.mass2 * armSim.getExtensionAccel() * Math.cos(getAngle());
                 double forceByGravity = (width / 2) * mass * Math.cos(x.get(0, 0)) * -9.8;
                 // FIXME find an actual equation for inertia, since this is completely made up
-                double inertia = (1.0/3.0) * mass * (width / 2) * (width / 2);
-                //xdot = xdot.plus(VecBuilder.fill(0, (forceByArm + forceByGravity) / inertia));
-                xdot = xdot.plus(VecBuilder.fill(0, forceByGravity / inertia));
+                double inertia = 1;
+                xdot = xdot.plus(VecBuilder.fill(0, (forceByGravity + forceByArm) / inertia));
             }
             return xdot;
         }, currentXhat, u, dtSeconds);
