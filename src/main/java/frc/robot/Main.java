@@ -4,12 +4,19 @@
 
 package frc.robot;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.PoseEstimado;
 
 public final class Main {
   private Main() {}
 
   public static void main(String... args) {
+    ExecutorService executor = Executors.newFixedThreadPool(1);
+    executor.execute(new PoseEstimado());
+
     RobotBase.startRobot(Robot::new);
   }
 }
