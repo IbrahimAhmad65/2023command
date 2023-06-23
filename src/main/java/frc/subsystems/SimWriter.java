@@ -6,7 +6,7 @@ import java.io.FileWriter;
 
 public class SimWriter extends SubsystemBase {
 
-    public static boolean sim = true;
+    public static boolean sim = false;
     private FileWriter writer;
     private final Wrist wrist;
     private final Arm arm;
@@ -17,20 +17,25 @@ public class SimWriter extends SubsystemBase {
         this.arm = arm;
         this.wrist = wrist;
         this.claw = claw;
+        if(sim){
         try {
             writer = new FileWriter("/home/ibrahim/simAll.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        }
     }
 
     @Override
     public void periodic() {
-        try {
-            writer.write(arm.getDynamicsSim().getDataToWrite() + wrist.getDynamicsSim().getDataToWrite() + claw.getDataToWrite()+ "\n");
-            writer.flush();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if(sim){
+
+            try {
+                writer.write(arm.getDynamicsSim().getDataToWrite() + wrist.getDynamicsSim().getDataToWrite() + claw.getDataToWrite()+ "\n");
+                writer.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
