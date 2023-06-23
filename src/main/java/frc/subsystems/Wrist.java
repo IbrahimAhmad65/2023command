@@ -22,7 +22,7 @@ public class Wrist extends SubsystemBase {
         super();
         if (sim) {
             controller = new PIDController(1,0,0);
-            wristSim = new WristSim(DCMotor.getNeo550(1), 0, Math.PI, 5, armSim, 0.1);
+            wristSim = new WristSim(DCMotor.getNeo550(1), -Math.PI, Math.PI, 0.5, armSim, 0.1, true);
         } else {
             encoder = new DutyCycleEncoder(0);
             motor = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);

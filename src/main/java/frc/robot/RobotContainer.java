@@ -24,6 +24,7 @@ public class RobotContainer {
 
   public SequentialCommandGroup armDoThings;
   public SequentialCommandGroup pickFromChamber;
+  public SequentialCommandGroup wristDoThings;
   public RobotContainer() {
     configureBindings();
     claw = new Claw();
@@ -37,8 +38,15 @@ public class RobotContainer {
             new ArmGoToPosition(arm,-Math.PI/2-Math.PI/6,.8),
             new ArmGoToPosition(arm,-Math.PI/2,.8)
             );
+    wristDoThings = new SequentialCommandGroup(
+            new WristToAngle(wrist, 0),
+            new WristToAngle(wrist, Math.PI),
+            new WristToAngle(wrist, -Math.PI),
+            new WristToAngle(wrist, Math.PI/2)
+    );
     armDoThings = new SequentialCommandGroup(
-            pickFromChamber
+            pickFromChamber,
+            wristDoThings
     );
 
   }
